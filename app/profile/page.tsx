@@ -2,11 +2,14 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-const profile = () => {
+const Profile = () => {
     const router = useRouter();
 
-    const handleLogout = () => {
-
+    const handleLogout = async () => {
+        const response = await axios.get("api/user/logout")
+        if (response.status === 200) {
+            router.push('/login');
+        }
     }
 
     return (
@@ -25,4 +28,4 @@ const profile = () => {
     );
 }
 
-export default profile;
+export default Profile;

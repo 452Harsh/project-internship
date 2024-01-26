@@ -3,24 +3,35 @@ import { useState } from 'react'
 import Input from '@/components/Input'
 import Link from 'next/link'
 import React from 'react'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 const defaultData = { name: "", username: "", password: "" };
 
 const register = () => {
     const [data, setData] = useState(defaultData)
+    const router = useRouter();
     const onValueChange = (e: any) => {
         setData({
             ...data, [e.target.name]: e.target.value
         })
     }
-    const onRegister = (e: any) => {
-        e.prenventDefault();
-        if(!data.name || !data.password || !data.username)
-        {
+    const onRegister = async (e: any) => {
+        e.preventDefault();
+        if (!data.name || !data.password || !data.username) {
             alert("Please fill all mandatory fields");
             return;
         }
         // api call
+        try {
+            const respone = await axios.post("api/user/register", data)
+            setData(defaultData);
+            if (respone.status === 200) {
+                router.push("/login");
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
     return (
         <div className='min-h-screen bg-gray-600 flex justify-center items-center'>
@@ -31,7 +42,9 @@ const register = () => {
                     <Input label="Username" id="username" type="text" value={data.username} onChange={(e: any) => onValueChange(e)} />
                     <Input label="Password" id="password" type="password" value={data.password} onChange={(e: any) => onValueChange(e)} />
                 </form>
-                <button className='bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 w-full rounded-full'>Submit</button>
+                <button className='bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 w-full rounded-full'
+
+                    onClick={(e) => onRegister(e)}  >Submit</button>
                 <p className='mt-3 text-center'>
                     Already Have an Account? {""}
                     <Link className='text-blue-500' href="/login" onClick={(e: any) => onRegister(e)}>Login</Link>
